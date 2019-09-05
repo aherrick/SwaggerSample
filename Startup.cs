@@ -6,6 +6,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Represents the startup process for the application.
@@ -61,28 +62,30 @@
 
                 //c.OperationFilter<ApiKeySwaggerFilter>();
 
+                // https://stackoverflow.com/questions/56234504/migrating-to-swashbuckle-aspnetcore-version-5
+
                 c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
                 {
-                    Type = SecuritySchemeType.ApiKey,
+                    Description = "Enter your Api Key below:",
                     Name = "my-api-key",
-                    In = ParameterLocation.Header
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { new OpenApiSecurityScheme()
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                    {
+                        {
+                          new OpenApiSecurityScheme
                             {
-							 // Type = SecuritySchemeType.ApiKey,
-								Name = ""
-								//In = ParameterLocation.Header
-								//Reference = new OpenApiReference()
-								//{
-								//	Id = "myToken",
-								//	Type = ReferenceType.SecurityScheme
-								//},
-					}, new string[] { }
-                    }
-                });
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "ApiKey"
+                                },
+                            },
+                            new List<string>()
+                        }
+                    });
             });
         }
 
